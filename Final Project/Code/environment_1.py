@@ -284,6 +284,6 @@ class Environment:
         alpha = 61
         loc = -28178
         beta = 618
-        self.weights = gamma.rvs(alpha, loc=loc, scale=beta, size=len(self.edges))
+        self.weights = np.round(gamma.rvs(alpha, loc=loc, scale=beta, size=len(self.edges)))
         self.increment_val = 10000
         return self.weights
