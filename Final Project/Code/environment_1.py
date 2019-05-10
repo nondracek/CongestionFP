@@ -126,19 +126,29 @@ def get_reward_sim(initial_edges):
     eq = [list(map(int,i.split(","))) for i in eq]
     graph = Graph()
     edge_dictionary = {}
-    for edge in initial_edges:
+    for edge in edges:
         s, f, w = edge
         edge_dictionary[(s,f)] = w
 
     for (s,f) , w in edge_dictionary.items():
         graph.add_edge(s,f,w)
 
-    initial_weights = sum(graph.weights.values())
+    initial_weights = graph.weights.copy()
 
     for i, route in enumerate(eq):
         for j in range(len(route) - 1):
             graph.weights[(route[j], route[j+1])] += agents_dict[i][1]
-    return ((sum(graph.weights.values()) - initial_weights) * -1), eq
+
+    cost_weights = {key: graph.weights[key] - initial_weights.get(key, 0) for key in graph.weights.keys()}
+
+    reward = 0
+    for i, route in enumerate(eq):
+        for j in range(len(route) - 1):
+            reward += (cost_weights[(route[j], route[j+1])] * agents_dict[i][1])
+
+    
+
+    return (reward * -1), eq
 
 
 
