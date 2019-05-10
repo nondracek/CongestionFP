@@ -126,7 +126,7 @@ def get_reward_sim(initial_edges):
     eq = [list(map(int,i.split(","))) for i in eq]
     graph = Graph()
     edge_dictionary = {}
-    for edge in edges:
+    for edge in initial_edges:
         s, f, w = edge
         edge_dictionary[(s,f)] = w
 
@@ -247,7 +247,8 @@ class Environment:
         self.action_space_n = 2*len(self.edges) + 1
         self.weight_max = 10
         self.weight_min = 1
-        self.increment_val = 10
+        self.increment_val = 10000
+        self.increment_decay = .99
 
     def step(self, action):
         next_state = self.weights
@@ -266,6 +267,7 @@ class Environment:
 
         reward, congestion = self.get_reward(next_state)
         self.weights = next_state
+        self.increment_val = int(self.increment_val * self.increment_decay)
 
         return next_state, reward, congestion, done
 
@@ -280,4 +282,5 @@ class Environment:
 
     def reset(self):
         self.weights = np.ones(len(self.edges))
+        self.increment_val = 10000
         return self.weights

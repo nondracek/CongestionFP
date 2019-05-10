@@ -98,7 +98,8 @@ class Environment:
         self.action_space_n = 2*len(self.edges) + 1
         self.weight_max = 10
         self.weight_min = 1
-        self.increment_val = 10
+        self.increment_decay = .995
+        self.increment_val = 100
         self.traffic_sim = CongestionGame('nyc_trips.csv')
 
     def step(self, action):
@@ -119,6 +120,7 @@ class Environment:
         reward, congestion = self.get_reward(next_state)
         self.weights = next_state
 
+        sefl.increment_val = self.incremnt_val * self.increment_decay
         return next_state, reward, congestion, done
 
     def get_reward(self, state):
@@ -132,4 +134,5 @@ class Environment:
 
     def reset(self):
         self.weights = np.ones(len(self.edges))
+        sefl.increment_val = 100
         return self.weights

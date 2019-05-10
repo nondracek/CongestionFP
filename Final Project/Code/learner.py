@@ -78,7 +78,7 @@ if __name__ == "__main__":
         for time in range(500):
             action = agent.act(state)
             next_state, reward, congestion, done = env.step(action)
-            reward = reward if not done else -10
+            reward = reward
             next_state = np.reshape(next_state, [1, state_size])
             agent.remember(state, action, reward, next_state, done)
             state = next_state
@@ -86,9 +86,9 @@ if __name__ == "__main__":
             f.write('time step: ' +  str(time) + ", reward: " + str(reward) + ", prices: " + str(state) + ", congestion: " + str(congestion) + '\n')
             if done:
                 print("episode: {}/{}, score: {}, e: {:.2}"
-                      .format(e, EPISODES, time, agent.epsilon))
+                      .format(e, EPISODES, reward, agent.epsilon))
                 f.write("episode: {}/{}, score: {}, e: {:.2} \n"
-                      .format(e, EPISODES, time, agent.epsilon))
+                      .format(e, EPISODES, reward, agent.epsilon))
                 break
             if len(agent.memory) > batch_size:
                 agent.replay(batch_size)
