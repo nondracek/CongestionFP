@@ -6,7 +6,9 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
 
-from environment import Environment
+# from environment import Environment
+from environment_1 import Environment
+
 
 EPISODES = 1000
 

@@ -1,10 +1,17 @@
 # Environment For Project #
 
 import numpy as np
+from collections import defaultdict
+import collections
+import multiprocessing as mp
+from scipy import stats
+import pandas as pd
+import itertools
 from simulation import CongestionGame
+from simulation import Graph
 
 
-def dijsktra(self, graph, initial, end):
+def dijsktra(graph, initial, end):
 # shortest paths is a dict of nodes
 # whose value is a tuple of (previous node, weight)
     shortest_paths = {initial: (None, 0)}
@@ -43,13 +50,14 @@ def dijsktra(self, graph, initial, end):
     path = path[::-1]
     return path
 
+agent_csv = "nyc_trips.csv"
 agents = pd.read_csv(agent_csv, index_col=0)
 agents_dict = {(key1, key2): value for key1, key2, value in np.array(agents)}
 agents_list = list(agents_dict.items())
 agents_dict= list(map(list, agents_dict.items()))
 agents = agents.reset_index()
 
-def simulation(self, initial_edges):
+def simulation(initial_edges):
     edge_dictionary = {}
     for edge in initial_edges:
         s, f, w = edge
@@ -96,7 +104,7 @@ def simulation(self, initial_edges):
     return optimals[-1]
 
 
-def get_equilibrium(self, initial_edges):
+def get_equilibrium(initial_edges):
     pool = mp.Pool(mp.cpu_count())
     results = [pool.apply_async(simulation, (initial_edges,)) for i in range((100 // mp.cpu_count())*mp.cpu_count())]
     results = [result.get() for result in results]
@@ -113,7 +121,7 @@ def get_equilibrium(self, initial_edges):
     final_equilibirum = np.ndarray.flatten((stats.mode(np.transpose(np.array(new_equilibrium)), axis=1)[0]))
     return final_equilibirum
 
-def get_reward_sim(self, initial_edges):
+def get_reward_sim(initial_edges):
     eq = get_equilibrium(initial_edges)
     eq = [list(map(int,i.split(","))) for i in eq]
     graph = Graph()
