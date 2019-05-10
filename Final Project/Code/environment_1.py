@@ -9,7 +9,7 @@ import pandas as pd
 import itertools
 from simulation import CongestionGame
 from simulation import Graph
-
+from scipy.stats import gamma
 
 def dijsktra(graph, initial, end):
 # shortest paths is a dict of nodes
@@ -146,7 +146,7 @@ def get_reward_sim(initial_edges):
         for j in range(len(route) - 1):
             reward += (cost_weights[(route[j], route[j+1])] * agents_dict[i][1])
 
-    
+
 
     return (reward * -1), eq
 
@@ -281,6 +281,9 @@ class Environment:
         return get_reward_sim(new_edges)
 
     def reset(self):
-        self.weights = np.ones(len(self.edges))
+        alpha = 61
+        loc = -28178
+        beta = 618
+        self.weights = gamma.rvs(alpha, loc=loc, scale=beta, size=len(self.edges))
         self.increment_val = 10000
         return self.weights
