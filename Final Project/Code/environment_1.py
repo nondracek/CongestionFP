@@ -133,10 +133,12 @@ def get_reward_sim(initial_edges):
     for (s,f) , w in edge_dictionary.items():
         graph.add_edge(s,f,w)
 
+    initial_weights = sum(graph.weights.values())
+
     for i, route in enumerate(eq):
         for j in range(len(route) - 1):
             graph.weights[(route[j], route[j+1])] += agents_dict[i][1]
-    return sum(graph.weights.values()) * -1, eq
+    return ((sum(graph.weights.values()) - initial_weights) * -1), eq
 
 
 
