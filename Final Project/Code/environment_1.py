@@ -69,9 +69,7 @@ def simulation(initial_edges):
 
     counter = 0
     optimals = []
-    total_values = []
     changes = [1]
-    iterations = []
     max_counts = 0
     while (changes[-1] != 0) and (max_counts < 50):
         max_counts += 1
@@ -100,9 +98,6 @@ def simulation(initial_edges):
             changes += [change]
         elif len(optimals) > 2:
             print("error")
-
-        iterations += [optimal]
-        total_values += [sum(list(graph.weights.values()))]
     return optimals[-1]
 
 
