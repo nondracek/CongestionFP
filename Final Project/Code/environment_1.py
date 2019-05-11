@@ -72,7 +72,9 @@ def simulation(initial_edges):
     total_values = []
     changes = [1]
     iterations = []
-    while changes[-1] != 0:
+    max_counts = 0
+    while (changes[-1] != 0) and (max_counts < 50):
+        max_counts += 1
         counter += 1
         optimal = {}
         ordering = np.random.choice(len(agents_list),len(agents_list), replace=False)
