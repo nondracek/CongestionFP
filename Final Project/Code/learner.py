@@ -5,9 +5,10 @@ from collections import deque
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
-
+import warnings
 # from environment import Environment
 from environment_1 import Environment
+
 
 
 EPISODES = 1000
@@ -67,6 +68,7 @@ class DQNAgent:
 
 
 if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
     env = Environment()
     state_size = env.state_space_n
     action_size = env.action_space_n
@@ -86,8 +88,8 @@ if __name__ == "__main__":
             next_state = np.reshape(next_state, [1, state_size])
             agent.remember(state, action, reward, next_state, done)
             state = next_state
-            print('time step: ', time, "reward: ", reward, "state: ", state)
-            f.write('time step: ' +  str(time) + ", reward: " + str(reward) + ", prices: " + str(state) + ", congestion: " + str(congestion) + '\n')
+            print('\nepisode: ', e,'time step: ', time, "reward: ", reward, "state: ", state)
+            f.write('episode: '+ str(e) +'time step: ' +  str(time) + ", reward: " + str(reward) + ", prices: " + str(state) + ", congestion: " + str(congestion) + '\n')
             if done:
                 print("episode: {}/{}, score: {}, e: {:.2}"
                       .format(e, EPISODES, reward, agent.epsilon))

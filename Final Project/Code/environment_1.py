@@ -58,6 +58,7 @@ agents_dict= list(map(list, agents_dict.items()))
 agents = agents.reset_index()
 
 def simulation(initial_edges):
+    print(".", end = "", flush=True)
     edge_dictionary = {}
     for edge in initial_edges:
         s, f, w = edge
@@ -84,7 +85,6 @@ def simulation(initial_edges):
             optimal[step] = dijsktra(graph, po, do)
             for i in range(len(optimal[step]) - 1):
                 graph.weights[(optimal[step][i], optimal[step][i+1])] += agents_dict[step][1]
-
         if len(optimals) < 2:
             optimals += [optimal]
         elif len(optimals) == 2:
@@ -246,6 +246,7 @@ class Environment:
         self.weight_min = 1
         self.increment_val = 10000
         self.increment_decay = .99
+        mp.set_start_method('fork')
         self.pool = mp.Pool(mp.cpu_count())
 
     def step(self, action):
@@ -282,7 +283,7 @@ class Environment:
         alpha = 61
         loc = -28178
         beta = 618
-        self.weights = np.round(gamma.rvs(alpha, loc=loc, scale=beta, size=len(self.edges)))
+        self.weights = np.clip(np.round(gamma.rvs(alpha, loc=loc, scale=beta, size=len(self.edges))), 1, 25000)
         self.increment_val = 10000
         return self.weights
 
