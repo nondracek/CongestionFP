@@ -244,9 +244,8 @@ class Environment:
         self.action_space_n = 2*len(self.edges) + 1
         self.weight_max = 10
         self.weight_min = 1
-        self.increment_val = 10000
-        self.increment_decay = .99
-        mp.set_start_method('fork')
+        self.increment_val = 1000
+        self.increment_decay = .999
         self.pool = mp.Pool(mp.cpu_count())
 
     def step(self, action):
@@ -283,8 +282,9 @@ class Environment:
         alpha = 61
         loc = -28178
         beta = 618
-        self.weights = np.clip(np.round(gamma.rvs(alpha, loc=loc, scale=beta, size=len(self.edges))), 1, 25000)
-        self.increment_val = 10000
+        #self.weights = np.clip(np.round(gamma.rvs(alpha, loc=loc, scale=beta, size=len(self.edges))), 1, 25000)
+        self.increment_val = 1000
+        self.weights = np.ones(len(self.edges))*10000
         return self.weights
 
     def close_pool(self):
