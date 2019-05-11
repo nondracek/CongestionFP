@@ -37,7 +37,7 @@ class DQNAgent:
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
 
-        if len(self.memory) > semf.memory_size:
+        if len(self.memory) > self.memory_size:
             self.memory = self.memory[-self.memory_size:]
 
     def act(self, state):

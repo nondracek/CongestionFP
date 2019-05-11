@@ -106,10 +106,8 @@ def get_equilibrium(initial_edges, pool):
     equilibrium = []
     new_equilibrium = []
     final_equilibirum = []
-    
-    results = [pool.apply_async(simulation, (initial_edges,)) for i in range(int((100 // mp.cpu_count())*mp.cpu_count()*.95))
+    results = [pool.apply_async(simulation, (initial_edges,)) for i in range(int((100 // mp.cpu_count())*mp.cpu_count()*.95))]
     results = [result.get() for result in results]
-    pool.join()
     equilibrium = results
     equilibrium = list(map(lambda x: list(collections.OrderedDict(sorted(x.items())).values()), equilibrium))
     for sim in equilibrium:
@@ -287,6 +285,7 @@ class Environment:
         self.weights = np.round(gamma.rvs(alpha, loc=loc, scale=beta, size=len(self.edges)))
         self.increment_val = 10000
         return self.weights
-    
+
     def close_pool(self):
         self.pool.close()
+        self.pool.join()
