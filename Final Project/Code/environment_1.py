@@ -58,7 +58,7 @@ agents_dict= list(map(list, agents_dict.items()))
 agents = agents.reset_index()
 
 def simulation(initial_edges):
-    print(".", end = "", flush=True)
+    print ".",
     edge_dictionary = {}
     for edge in initial_edges:
         s, f, w = edge
