@@ -24,7 +24,7 @@ def dijsktra(graph, initial, end):
         weight_to_current_node = shortest_paths[current_node][1]
 
         for next_node in destinations:
-            weight = graph.weights[(current_node, next_node)] + weight_to_current_node
+            weight = (graph.weights[(current_node, next_node)]**3) + weight_to_current_node
             if next_node not in shortest_paths:
                 shortest_paths[next_node] = (current_node, weight)
             else:
@@ -244,28 +244,34 @@ class Environment:
         self.action_space_n = 2*len(self.edges) + 1
         self.weight_max = 10
         self.weight_min = 1
-        self.increment_val = 1000
-        self.increment_decay = .999
+        self.increment_val = 75
+        self.increment_decay = .995
         self.pool = mp.Pool(mp.cpu_count())
+        self.initial_reward = None
 
     def step(self, action):
         next_state = self.weights
         done = False
+        street_change = int((action-1)/2)
 
         if action == 0:
-            done = True
+            #done = True
+            pass
         else:
-            street_change = int(action/3)
             change = action % 2
 
             if change == 1:
                 next_state[street_change] += self.increment_val
-            elif change == 0 and (next_state[street_change] >= (self.weight_min + self.increment_val)):
-                next_state[street_change] -= self.increment_val
+            elif change == 0:
+                if next_state[street_change] == 1:
+                    done = True
 
+                next_state[street_change] = max(self.weight_min, next_state[street_change] - self.increment_val)
+        
+        next_state[street_change] = round(next_state[street_change], 3)
         reward, congestion = self.get_reward(next_state)
         self.weights = next_state
-        self.increment_val = int(self.increment_val * self.increment_decay)
+        self.increment_val = round(self.increment_val * self.increment_decay, 2)
 
         return next_state, reward, congestion, done
 
@@ -275,16 +281,24 @@ class Environment:
             new_edges.append((self.edges[i][0], self.edges[i][1], state[i]))
 
         self.edges = new_edges
-
-        return get_reward_sim(new_edges, self.pool)
+        reward, congestion = get_reward_sim(new_edges, self.pool)
+        return reward - self.initial_reward, congestion
 
     def reset(self):
         alpha = 61
         loc = -28178
         beta = 618
         #self.weights = np.clip(np.round(gamma.rvs(alpha, loc=loc, scale=beta, size=len(self.edges))), 1, 25000)
-        self.increment_val = 1000
-        self.weights = np.ones(len(self.edges))*10000
+        self.increment_val = 75
+        self.weights = np.ones(len(self.edges))*100
+
+        new_edges = []
+        for i in range(len(self.edges)):
+            new_edges.append((self.edges[i][0], self.edges[i][1], self.weights[i]))
+
+        self.edges = new_edges
+        self.initial_reward, self.initial_congestion = get_reward_sim(new_edges, self.pool)
+
         return self.weights
 
     def close_pool(self):

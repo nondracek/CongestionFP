@@ -19,7 +19,7 @@ class DQNAgent:
         self.action_size = action_size
         self.memory = deque(maxlen=2000)
         self.gamma = 0.95    # discount rate
-        self.epsilon = 1.0  # exploration rate
+        self.epsilon = 1    # exploration rate
         self.epsilon_min = 0.01
         self.epsilon_decay = 0.995
         self.learning_rate = 0.001
@@ -59,6 +59,7 @@ class DQNAgent:
             self.model.fit(state, target_f, epochs=1, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+            self.epsilon = round(self.epsilon, 3)
 
     def load(self, name):
         self.model.load_weights(name)
@@ -84,17 +85,17 @@ if __name__ == "__main__":
         for time in range(500):
             action = agent.act(state)
             next_state, reward, congestion, done = env.step(action)
-            reward = reward
+            if done:
+                reward = -100000000000000000
             next_state = np.reshape(next_state, [1, state_size])
             agent.remember(state, action, reward, next_state, done)
             state = next_state
-            print('\nepisode: ', e,'time step: ', time, "reward: ", reward, "state: ", state)
+            print('\nepisode: ', e,'time step: ', time, "action: ", str(action), "reward: ", reward, "epsilon :", agent.epsilon, "change :", env.increment_val)
+            print( "state: ", state)
             f.write('episode: '+ str(e) +'time step: ' +  str(time) + ", reward: " + str(reward) + ", prices: " + str(state) + ", congestion: " + str(congestion) + '\n')
             if done:
-                print("episode: {}/{}, score: {}, e: {:.2}"
-                      .format(e, EPISODES, reward, agent.epsilon))
-                f.write("episode: {}/{}, score: {}, e: {:.2} \n"
-                      .format(e, EPISODES, reward, agent.epsilon))
+                print("episode: " + str(e) + "/" + str(EPISODES) + ", score: " + str(reward) + ", e: " + str(agent.epsilon))
+                f.write("episode: " + str(e) + "/" + str(EPISODES) + ", score: " + str(reward) + ", e: " + str(agent.epsilon))
                 break
             if len(agent.memory) > batch_size:
                 agent.replay(batch_size)
