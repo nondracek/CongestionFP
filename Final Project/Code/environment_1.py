@@ -58,7 +58,7 @@ agents_dict= list(map(list, agents_dict.items()))
 agents = agents.reset_index()
 
 def simulation(initial_edges):
-    print ".",
+    # print ".",
     edge_dictionary = {}
     for edge in initial_edges:
         s, f, w = edge
@@ -273,7 +273,7 @@ class Environment:
     def get_reward(self, state):
         new_edges = []
         for i in range(len(self.edges)):
-            new_edges.append((self.edges[i][0], self.edges[i][1], self.weights[i]))
+            new_edges.append((self.edges[i][0], self.edges[i][1], state[i]))
 
         self.edges = new_edges
 

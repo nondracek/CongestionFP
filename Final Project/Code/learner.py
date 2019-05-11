@@ -39,7 +39,7 @@ class DQNAgent:
         self.memory.append((state, action, reward, next_state, done))
 
         if len(self.memory) > self.memory_size:
-            self.memory = self.memory[-self.memory_size:]
+            # self.memory = self.memory[-self.memory_size:]
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
