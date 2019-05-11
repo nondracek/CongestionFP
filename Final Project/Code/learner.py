@@ -22,6 +22,7 @@ class DQNAgent:
         self.epsilon_min = 0.01
         self.epsilon_decay = 0.995
         self.learning_rate = 0.001
+        self.memory_size = 1000
         self.model = self._build_model()
 
     def _build_model(self):
@@ -35,6 +36,9 @@ class DQNAgent:
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
+
+        if len(self.memory) > semf.memory_size:
+            self.memory = self.memory[-self.memory_size:]
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
@@ -96,3 +100,4 @@ if __name__ == "__main__":
         #     agent.save("./save/cartpole-dqn.h5")
 
     f.close()
+    env.close_pool()

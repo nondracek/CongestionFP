@@ -101,15 +101,17 @@ def simulation(initial_edges):
     return optimals[-1]
 
 
-def get_equilibrium(initial_edges):
-    pool = mp.Pool(mp.cpu_count())
-    results = [pool.apply_async(simulation, (initial_edges,)) for i in range((100 // mp.cpu_count())*mp.cpu_count())]
+def get_equilibrium(initial_edges, pool):
+    results = []
+    equilibrium = []
+    new_equilibrium = []
+    final_equilibirum = []
+    
+    results = [pool.apply_async(simulation, (initial_edges,)) for i in range(int((100 // mp.cpu_count())*mp.cpu_count()*.95))
     results = [result.get() for result in results]
-    pool.close()
     pool.join()
     equilibrium = results
     equilibrium = list(map(lambda x: list(collections.OrderedDict(sorted(x.items())).values()), equilibrium))
-    new_equilibrium = []
     for sim in equilibrium:
         new_sim = []
         for path in sim:
@@ -118,8 +120,8 @@ def get_equilibrium(initial_edges):
     final_equilibirum = np.ndarray.flatten((stats.mode(np.transpose(np.array(new_equilibrium)), axis=1)[0]))
     return final_equilibirum
 
-def get_reward_sim(initial_edges):
-    eq = get_equilibrium(initial_edges)
+def get_reward_sim(initial_edges, pool):
+    eq = get_equilibrium(initial_edges, pool)
     eq = [list(map(int,i.split(","))) for i in eq]
     graph = Graph()
     edge_dictionary = {}
@@ -246,6 +248,7 @@ class Environment:
         self.weight_min = 1
         self.increment_val = 10000
         self.increment_decay = .99
+        self.pool = mp.Pool(mp.cpu_count())
 
     def step(self, action):
         next_state = self.weights
@@ -275,7 +278,7 @@ class Environment:
 
         self.edges = new_edges
 
-        return get_reward_sim(new_edges)
+        return get_reward_sim(new_edges, self.pool)
 
     def reset(self):
         alpha = 61
@@ -284,3 +287,6 @@ class Environment:
         self.weights = np.round(gamma.rvs(alpha, loc=loc, scale=beta, size=len(self.edges)))
         self.increment_val = 10000
         return self.weights
+    
+    def close_pool(self):
+        self.pool.close()
