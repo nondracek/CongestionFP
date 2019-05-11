@@ -90,7 +90,7 @@ if __name__ == "__main__":
             next_state = np.reshape(next_state, [1, state_size])
             agent.remember(state, action, reward, next_state, done)
             state = next_state
-            print('\nepisode: ', e,'time step: ', time, "action: ", str(action), "reward: ", reward, "epsilon :", agent.epsilon, "change :", env.increment_val)
+            print('\nepisode: ', e,'time step: ', time, "action: ", str(action), "reward: ", reward, "initial traffic: ", env.initial_reward, "total_traffic: ", reward + env.initial_reward, " epsilon :", agent.epsilon, "change :", env.increment_val)
             print( "state: ", state)
             f.write('episode: '+ str(e) +'time step: ' +  str(time) + ", reward: " + str(reward) + ", prices: " + str(state) + ", congestion: " + str(congestion) + '\n')
             if done:

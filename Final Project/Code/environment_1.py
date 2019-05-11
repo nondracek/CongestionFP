@@ -142,6 +142,7 @@ def get_reward_sim(initial_edges, pool):
     for i, route in enumerate(eq):
         for j in range(len(route) - 1):
             reward += (cost_weights[(route[j], route[j+1])] * agents_dict[i][1])
+            #reward += (cost_weights[(route[j], route[j+1])] * initial_weights[(route[j], route[j+1])])
 
 
 
@@ -244,8 +245,8 @@ class Environment:
         self.action_space_n = 2*len(self.edges) + 1
         self.weight_max = 10
         self.weight_min = 1
-        self.increment_val = 75
-        self.increment_decay = .995
+        self.increment_val = 100
+        self.increment_decay = .999
         self.pool = mp.Pool(mp.cpu_count())
         self.initial_reward = None
 
@@ -268,7 +269,7 @@ class Environment:
 
                 next_state[street_change] = max(self.weight_min, next_state[street_change] - self.increment_val)
 
-        next_state = [round(float(i)/max(next_state), 3) for i in next_state] * 200
+        next_state = [round((float(i)/sum(next_state))*8000, 3) for i in next_state]
 
         # next_state[street_change] = round(next_state[street_change], 3)
         reward, congestion = self.get_reward(next_state)
@@ -300,6 +301,7 @@ class Environment:
 
         self.edges = new_edges
         self.initial_reward, self.initial_congestion = get_reward_sim(new_edges, self.pool)
+        print("initial traffic: ", self.initial_reward)
 
         return self.weights
 
