@@ -267,8 +267,10 @@ class Environment:
                     done = True
 
                 next_state[street_change] = max(self.weight_min, next_state[street_change] - self.increment_val)
-        
-        next_state[street_change] = round(next_state[street_change], 3)
+
+        next_state = [round(float(i)/max(next_state), 3) for i in next_state] * 200
+
+        # next_state[street_change] = round(next_state[street_change], 3)
         reward, congestion = self.get_reward(next_state)
         self.weights = next_state
         self.increment_val = round(self.increment_val * self.increment_decay, 2)
