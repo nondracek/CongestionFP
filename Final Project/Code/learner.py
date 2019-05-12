@@ -56,7 +56,7 @@ class DQNAgent:
                           np.amax(self.model.predict(next_state)[0]))
             target_f = self.model.predict(state)
             target_f[0][action] = target
-            self.model.fit(state, target_f, epochs=1, verbose=0)
+            self.model.fit(state, target_f, epochs=3, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
             self.epsilon = round(self.epsilon, 8)
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     state_size = env.state_space_n
     action_size = env.action_space_n
     agent = DQNAgent(state_size, action_size)
-    batch_size = 32
+    batch_size = 100
 
     f= open("model.txt","w+")
 
@@ -86,7 +86,7 @@ if __name__ == "__main__":
             action = agent.act(state)
             next_state, reward, congestion, done = env.step(action)
             if done:
-                reward = -100000000000000000
+                reward = reward
             next_state = np.reshape(next_state, [1, state_size])
             agent.remember(state, action, reward, next_state, done)
             state = next_state

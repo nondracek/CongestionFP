@@ -244,7 +244,7 @@ class Environment:
         self.state_space_n = len(self.edges)
         self.action_space_n = 2*len(self.edges) + 1
         self.weight_max = 10
-        self.weight_min = 1
+        self.weight_min = .1
         self.increment_val = 100
         self.increment_decay = .999
         self.pool = mp.Pool(mp.cpu_count())
@@ -264,10 +264,10 @@ class Environment:
             if change == 1:
                 next_state[street_change] += self.increment_val
             elif change == 0:
-                if next_state[street_change] == 1:
+                if next_state[street_change] <= self.weight_min:
                     done = True
-
-                next_state[street_change] = max(self.weight_min, next_state[street_change] - self.increment_val)
+                else:
+                    next_state[street_change] = max(self.weight_min, next_state[street_change] - self.increment_val)
 
         next_state = [round((float(i)/sum(next_state))*8000, 3) for i in next_state]
 
