@@ -21,7 +21,7 @@ class DQNAgent:
         self.gamma = 0.95    # discount rate
         self.epsilon = 1    # exploration rate
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
+        self.epsilon_decay = 0.9993
         self.learning_rate = 0.001
         self.memory_size = 1000
         self.model = self._build_model()
@@ -59,7 +59,7 @@ class DQNAgent:
             self.model.fit(state, target_f, epochs=1, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
-            self.epsilon = round(self.epsilon, 3)
+            self.epsilon = round(self.epsilon, 8)
 
     def load(self, name):
         self.model.load_weights(name)

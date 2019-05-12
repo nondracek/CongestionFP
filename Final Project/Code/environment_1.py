@@ -256,8 +256,8 @@ class Environment:
         street_change = int((action-1)/2)
 
         if action == 0:
-            #done = True
-            pass
+            done = True
+            #pass
         else:
             change = action % 2
 
